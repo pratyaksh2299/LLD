@@ -21,7 +21,7 @@ class ProtectionProxy(Service):
         if(self.role!='admin'):
             print(f'access denied')
             return
-        # lazy intilization
+        # lazy loading of the real service
         if (self._real is None):
             self._real = RealService()
         self._real.request()
