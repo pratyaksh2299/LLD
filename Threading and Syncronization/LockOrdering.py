@@ -1,4 +1,3 @@
-from ast import arg
 import threading
 import time
 
@@ -9,14 +8,16 @@ class Bank:
         self.lock = threading.Lock()
 
 def transfer(from_bank, to_bank, amount):
+    # To prevent deadlock, we can enforce a consistent lock ordering based on the id of the bank objects.
+    first, second = (from_bank, to_bank) if id(from_bank) < id(to_bank) else (to_bank, from_bank)
     print(f"Attempting to transfer {amount} from {from_bank.name} to {to_bank.name}")
-    with from_bank.lock:  # Acquire lock on the source bank
-        print(f"thread {threading.current_thread().name} acquired lock on {from_bank.name}")
+    with first.lock:  # Acquire lock on the first bank
+        print(f"thread {threading.current_thread().name} acquired lock on {first.name}")
         time.sleep(0.2) # Simulate some processing time to increase the chance of a deadlock
-        from_bank.amount -= amount
-        with to_bank.lock:  # Acquire lock on the destination bank
-            #print(f"thread {threading.current_thread().name} acquired lock on {to_bank.name}")
-            to_bank.amount += amount
+        first.amount -= amount
+        with second.lock:  # Acquire lock on the destination bank
+            #print(f"thread {threading.current_thread().name} acquired lock on {second.name}")
+            second.amount += amount
             print(f"Transfer complete: {amount} from {from_bank.name} to {to_bank.name}")
 
 
