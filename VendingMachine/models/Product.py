@@ -1,10 +1,29 @@
 from dataclasses import dataclass
-from ..enums.ProductEnum import ProductType
 from numbers import Number
 
-@dataclass
+try:
+    from ..enums.ProductEnum import ProductType
+except ImportError:
+    from enums.ProductEnum import ProductType
+
+
+@dataclass(eq=True, frozen=True)
 class Product:
-    _name : str
-    _type : ProductType
-    _price : Number
+    _code: str
+    _name: str
+    _type: ProductType
+    _price: Number
+
+    def get_code(self):
+        return self._code
+
+    def get_name(self):
+        return self._name
+
+    def get_amount(self):
+        return self._price
+
+    def get_type(self):
+        return self._type
+
 
